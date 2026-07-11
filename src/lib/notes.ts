@@ -27,34 +27,16 @@ export function saveNotes(notes: Note[]) {
 
 
 export function createNote(): Note {
-  const newNote: Note = {
+  return {
     id: crypto.randomUUID(),
-
-    title: "Untitled Note",
-
+    title: "",
     content: "",
-
     theme: "default",
-
     font: "default",
-
     createdAt: new Date().toISOString(),
-
     updatedAt: new Date().toISOString(),
   };
-
-
-  const notes = getNotes();
-
-  saveNotes([
-    newNote,
-    ...notes,
-  ]);
-
-
-  return newNote;
 }
-
 
 export function updateNote(updatedNote: Note) {
   const notes = getNotes();

@@ -4,30 +4,60 @@ import { useEffect, useState } from "react";
 
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { NoteEditor } from "@/components/editor/NoteEditor";
+import { Workspace } from "@/components/home/Workspace";
 
+import { View } from "@/types/view";
 import { Note } from "@/types/note";
-import { getNotes, createNote } from "@/lib/notes";
+import { AppShell } from "@/components/layout/AppShell";
+
+import {
+  createNote,
+  getNotes,
+  saveNotes,
+} from "@/lib/notes";
 
 export function GlassNotesApp() {
+  const [view, setView] = useState<View>("home");
+
   const [notes, setNotes] = useState<Note[]>([]);
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+
+  const [selectedNoteId, setSelectedNoteId] =
+    useState<string | null>(null);
 
   useEffect(() => {
     const savedNotes = getNotes();
 
     setNotes(savedNotes);
-
-    if (savedNotes.length > 0) {
-      setSelectedNoteId(savedNotes[0].id);
-    }
   }, []);
+
+  useEffect(() => {
+    saveNotes(notes);
+  }, [notes]);
+
+  const selectedNote =
+    notes.find((note) => note.id === selectedNoteId) ?? null;
 
   function handleCreateNote() {
     const note = createNote();
 
-    setNotes((previous) => [note, ...previous]);
+    setNotes((previous) => [
+      note,
+      ...previous,
+    ]);
 
     setSelectedNoteId(note.id);
+
+    setView("editor");
+  }
+
+  function handleSelectNote(id: string) {
+    setSelectedNoteId(id);
+
+    setView("editor");
+  }
+
+  function handleBack() {
+    setView("home");
   }
 
   function handleUpdateTitle(title: string) {
@@ -46,24 +76,47 @@ export function GlassNotesApp() {
     );
   }
 
-  const selectedNote =
-    notes.find((note) => note.id === selectedNoteId) ?? null;
+  function handleUpdateContent(content: string) {
+    if (!selectedNoteId) return;
+
+    setNotes((previous) =>
+      previous.map((note) =>
+        note.id === selectedNoteId
+          ? {
+              ...note,
+              content,
+              updatedAt: new Date().toISOString(),
+            }
+          : note
+      )
+    );
+  }
 
   return (
-    <main className="flex h-screen bg-white">
+  <AppShell
+    sidebar={
       <Sidebar
         notes={notes}
         selectedNoteId={selectedNoteId}
-        onSelectNote={setSelectedNoteId}
+        onSelectNote={handleSelectNote}
         onCreateNote={handleCreateNote}
       />
-
-      <section className="flex flex-1">
-        <NoteEditor
-          note={selectedNote}
-          onUpdateTitle={handleUpdateTitle}
-        />
-      </section>
-    </main>
-  );
+    }
+  >
+    {view === "home" ? (
+      <Workspace
+      notes={notes}
+       onCreateNote={handleCreateNote}
+      onOpenNote={handleSelectNote}
+    />
+    ) : (
+      <NoteEditor
+        note={selectedNote}
+        onUpdateTitle={handleUpdateTitle}
+        onUpdateContent={handleUpdateContent}
+        onBack={handleBack}
+      />
+    )}
+  </AppShell>
+);
 }

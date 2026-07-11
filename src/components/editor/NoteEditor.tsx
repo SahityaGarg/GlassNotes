@@ -1,51 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 
 import { AnimatedEditor } from "./AnimatedEditor";
+
 import { Note } from "@/types/note";
 
 type NoteEditorProps = {
   note: Note | null;
   onUpdateTitle: (title: string) => void;
+  onUpdateContent: (content: string) => void;
+  onBack: () => void;
 };
 
 export function NoteEditor({
   note,
   onUpdateTitle,
+  onUpdateContent,
+  onBack, 
 }: NoteEditorProps) {
-  const [title, setTitle] = useState("");
-
-  useEffect(() => {
-    setTitle(note?.title ?? "");
-  }, [note]);
-
   const editor = useEditor({
+    immediatelyRender: false,
+
     extensions: [
       StarterKit,
+
       Placeholder.configure({
         placeholder: "Start writing...",
       }),
     ],
-    content: "",
+
+    content: note?.content ?? "",
+
+    onUpdate({ editor }) {
+      onUpdateContent(editor.getHTML());
+    },
   });
 
-  if (!editor) {
-    return null;
-  }
+  useEffect(() => {
+    if (!editor || !note) return;
 
-  function handleTitleChange(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
-    const value = event.target.value;
+    if (editor.getHTML() !== note.content) {
+      editor.commands.setContent(note.content);
+    }
+  }, [editor, note]);
 
-    setTitle(value);
-    onUpdateTitle(value);
-  }
+  if (!editor) return null;
 
   return (
     <AnimatedEditor>
@@ -60,12 +64,30 @@ export function NoteEditor({
           px-6
           pt-12
         "
-      >
+        
+        >
+         <button
+           onClick={onBack}
+          className="
+          mb-8
+          w-fit
+          rounded-lg
+          px-3
+          py-2
+          text-sm
+          text-neutral-400
+          transition
+          hover:bg-neutral-100
+          hover:text-black
+         "
+        >
+       ← Dashboard
+       </button>
         <input
-          value={title}
-          onChange={handleTitleChange}
+          value={note?.title ?? ""}
+          onChange={(e) => onUpdateTitle(e.target.value)}
           placeholder="Untitled Note"
-          className={`
+          className="
             mb-10
             w-full
             bg-transparent
@@ -73,16 +95,8 @@ export function NoteEditor({
             font-semibold
             tracking-tight
             outline-none
-            border-none
-            ring-0
-            focus:outline-none
-            focus:ring-0
-            ${
-              title.length === 0
-                ? "text-neutral-300"
-                : "text-neutral-900"
-            }
-          `}
+            placeholder:text-neutral-300
+          "
         />
 
         <div
@@ -98,7 +112,6 @@ export function NoteEditor({
               min-h-full
               text-[21px]
               leading-[1.8]
-              text-neutral-900
               [&_.ProseMirror]:outline-none
             "
           />
