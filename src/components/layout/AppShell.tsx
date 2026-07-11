@@ -23,10 +23,10 @@ export function AppShell({
       </aside>
 
       <section
-        className="flex-1 overflow-hidden bg-white"
+        className="flex-1 overflow-y-auto bg-white"
       >
         {children}
-      </section>
+      </section>  
     </main>
   );
 }
