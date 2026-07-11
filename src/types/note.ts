@@ -1,3 +1,14 @@
+export type NoteTheme =
+  | "default"
+  | "paper"
+  | "midnight"
+  | "glass";
+
+export type NoteFont =
+  | "default"
+  | "serif"
+  | "mono";
+
 export type Note = {
   id: string;
 
@@ -5,9 +16,9 @@ export type Note = {
 
   content: string;
 
-  theme: string;
+  theme: NoteTheme;
 
-  font: string;
+  font: NoteFont;
 
   createdAt: string;
 

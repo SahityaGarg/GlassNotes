@@ -16,6 +16,7 @@ type NoteEditorProps = {
   note: Note | null;
   onUpdateTitle: (title: string) => void;
   onUpdateContent: (content: string) => void;
+  onUpdateTheme: (theme: Note["theme"]) => void;
   onBack: () => void;
 };
 
@@ -24,6 +25,7 @@ export function NoteEditor({
   onUpdateTitle,
   onUpdateContent,
   onBack,
+  onUpdateTheme,
 }: NoteEditorProps) {
   const [words, setWords] = useState(0);
   const [characters, setCharacters] = useState(0);
@@ -85,11 +87,34 @@ export function NoteEditor({
 
   return (
     <AnimatedEditor>
-      <div className="relative flex h-full flex-col bg-neutral-50">
+      <div
+       className={`
+         relative
+         flex
+          h-full
+         flex-col
+          transition-all
+         duration-500
 
+         ${
+           note.theme === "default"
+           ? "bg-neutral-50"
+
+           : note.theme === "paper"
+           ? "bg-amber-50"
+
+           : note.theme === "midnight"
+           ? "bg-neutral-950 text-white"
+
+           : "bg-gradient-to-br from-cyan-100 via-white to-blue-100"
+        }
+      `}
+      >
         <AppearancePanel
           open={panelOpen}
           onToggle={() => setPanelOpen(!panelOpen)}
+          theme={note.theme}
+          onThemeChange={onUpdateTheme}
         />
 
         <div className="border-b border-neutral-200 bg-white/90 backdrop-blur">
@@ -120,7 +145,7 @@ export function NoteEditor({
             <EditorToolbar editor={editor} />
 
             <div
-              className="
+              className={`
                 rounded-[36px]
                 border
                 border-white/40
@@ -128,7 +153,21 @@ export function NoteEditor({
                 p-10
                 shadow-2xl
                 backdrop-blur-xl
-              "
+                transition-all
+                duration-500
+
+                ${
+                  note.theme === "midnight"
+                    ? "border-neutral-800 bg-neutral-900/80"
+
+                  : note.theme === "paper"
+                   ? "border-amber-200 bg-amber-100/70"
+                  : note.theme === "glass"
+                    ? "border-white/30 bg-white/25"
+
+                  : "border-white/40 bg-white/70"
+                }
+            `}
             >
               <input
                 value={note.title}

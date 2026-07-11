@@ -151,7 +151,21 @@ export function GlassNotesApp() {
   }
 
 
+function handleUpdateTheme(theme: Note["theme"]) {
+  if (!selectedNoteId) return;
 
+  setNotes((previous) =>
+    previous.map((note) =>
+      note.id === selectedNoteId
+        ? {
+            ...note,
+            theme,
+            updatedAt: new Date().toISOString(),
+          }
+        : note
+    )
+  );
+}
 
 
   function handleDeleteNote(id:string) {

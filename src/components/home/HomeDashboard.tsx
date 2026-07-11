@@ -28,7 +28,7 @@ export function HomeDashboard({
 
         <button
           onClick={onCreateNote}
-          className="mt-10 rounded-xl bg-black px-8 py-4 text-white transition hover:scale-[1.02]"
+          className="mt-10 rounded-xl bg-black px-8 py-4 text-white transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
         >
           Create Note
         </button>
@@ -36,10 +36,10 @@ export function HomeDashboard({
         {notes.length > 0 && (
           <button
             onClick={() => onOpenNote(notes[0].id)}
-            className="ml-4 rounded-xl border px-8 py-4"
+            className="ml-4 rounded-xl border border-neutral-300 bg-white px-8 py-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:border-black"
           >
             Continue Writing
-          </button>
+          </button> 
         )}
 
       </div>
