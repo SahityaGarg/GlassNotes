@@ -1,68 +1,74 @@
-import {
-  FileText,
-  Plus,
-  Search,
-  Settings,
-  Star,
-} from "lucide-react";
+"use client";
 
-export function Sidebar() {
+import { Plus } from "lucide-react";
+
+import { Note } from "@/types/note";
+
+type SidebarProps = {
+  notes: Note[];
+  selectedNoteId: string | null;
+  onSelectNote: (id: string) => void;
+  onCreateNote: () => void;
+};
+
+export function Sidebar({
+  notes,
+  selectedNoteId,
+  onSelectNote,
+  onCreateNote,
+}: SidebarProps) {
+    
   return (
-    <aside className="hidden w-72 border-r border-gray-200 bg-white md:flex md:flex-col">
-      {/* Header */}
-      <header className="border-b border-gray-200 px-6 py-5">
-        <h1 className="text-xl font-semibold tracking-tight">
-          GlassNotes
-        </h1>
-      </header>
+    <aside className="hidden w-72 border-r border-gray-200 md:flex md:flex-col">
 
-      {/* Actions */}
-      <div className="space-y-2 p-4">
-        <button 
-         type="button"
-         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-100">
-          <Plus size={18} />
-          New Note
-        </button>
+      <div className="border-b border-gray-200 p-5">
 
-        <button 
-         type="button"
-         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-gray-100">
-          <Search size={18} />
-          Search
-        </button>
+        <div className="flex items-center justify-between">
+
+          <h1 className="text-xl font-semibold tracking-tight">
+            GlassNotes
+          </h1>
+
+          <button
+            onClick={onCreateNote}
+            className="rounded-lg p-2 transition hover:bg-gray-100"
+          >
+            <Plus size={18} />
+          </button>
+
+        </div>
+
       </div>
 
-      {/* Notes */}
-      <div className="flex-1 px-4">
-        <p className="mb-2 px-3 text-xs font-medium text-gray-400">
-          NOTES
-        </p>
+       <div className="flex-1 overflow-y-auto">
+        {notes.map((note) => (
+          <button
+          key={note.id}
+          onClick={() => onSelectNote(note.id)}
+          className={`
+           w-full
+           px-5
+           py-4
+           text-left
+           transition
+           hover:bg-gray-100
+           ${
+             selectedNoteId === note.id
+             ? "bg-gray-100"
+             : ""
+          }
+      ` }
+     >
+      <h3 className="truncate font-medium">
+        {note.title || "Untitled Note"}
+      </h3>
 
-        <button 
-         type="button"
-         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-gray-100">
-          <FileText size={18} />
-          All Notes
-        </button>
-
-        <button 
-         type="button"
-         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-gray-100">
-          <Star size={18} />
-          Favorites
-        </button>
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-gray-200 p-4">
-        <button 
-         type="button"
-         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-gray-100">
-          <Settings size={18} />
-          Settings
-        </button>
-      </div>
-    </aside>
+       <p className="mt-1 truncate text-sm text-gray-400">
+         {note.content || "Empty note"}
+       </p>
+    </button>
+  ))}
+</div>
+</aside>
   );
 }

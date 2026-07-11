@@ -1,0 +1,109 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+
+import { AnimatedEditor } from "./AnimatedEditor";
+import { Note } from "@/types/note";
+
+type NoteEditorProps = {
+  note: Note | null;
+  onUpdateTitle: (title: string) => void;
+};
+
+export function NoteEditor({
+  note,
+  onUpdateTitle,
+}: NoteEditorProps) {
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    setTitle(note?.title ?? "");
+  }, [note]);
+
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Start writing...",
+      }),
+    ],
+    content: "",
+  });
+
+  if (!editor) {
+    return null;
+  }
+
+  function handleTitleChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const value = event.target.value;
+
+    setTitle(value);
+    onUpdateTitle(value);
+  }
+
+  return (
+    <AnimatedEditor>
+      <div
+        className="
+          mx-auto
+          flex
+          h-full
+          w-full
+          max-w-3xl
+          flex-col
+          px-6
+          pt-12
+        "
+      >
+        <input
+          value={title}
+          onChange={handleTitleChange}
+          placeholder="Untitled Note"
+          className={`
+            mb-10
+            w-full
+            bg-transparent
+            text-5xl
+            font-semibold
+            tracking-tight
+            outline-none
+            border-none
+            ring-0
+            focus:outline-none
+            focus:ring-0
+            ${
+              title.length === 0
+                ? "text-neutral-300"
+                : "text-neutral-900"
+            }
+          `}
+        />
+
+        <div
+          className="flex-1 cursor-text"
+          onClick={() => editor.commands.focus()}
+        >
+          <EditorContent
+            editor={editor}
+            className="
+              prose
+              prose-lg
+              max-w-none
+              min-h-full
+              text-[21px]
+              leading-[1.8]
+              text-neutral-900
+              [&_.ProseMirror]:outline-none
+            "
+          />
+        </div>
+      </div>
+    </AnimatedEditor>
+  );
+}
