@@ -9,6 +9,7 @@ type SidebarProps = {
   selectedNoteId: string | null;
   onSelectNote: (id: string) => void;
   onCreateNote: () => void;
+  onDeleteNote: (id: string) => void;
 };
 
 export function Sidebar({
@@ -16,8 +17,9 @@ export function Sidebar({
   selectedNoteId,
   onSelectNote,
   onCreateNote,
+  onDeleteNote,
 }: SidebarProps) {
-    
+
   return (
     <aside className="hidden w-72 border-r border-gray-200 md:flex md:flex-col">
 
@@ -40,35 +42,62 @@ export function Sidebar({
 
       </div>
 
-       <div className="flex-1 overflow-y-auto">
-        {notes.map((note) => (
-          <button
-          key={note.id}
-          onClick={() => onSelectNote(note.id)}
-          className={`
-           w-full
-           px-5
-           py-4
-           text-left
-           transition
-           hover:bg-gray-100
-           ${
-             selectedNoteId === note.id
-             ? "bg-gray-100"
-             : ""
-          }
-      ` }
-     >
-      <h3 className="truncate font-medium">
-        {note.title || "Untitled Note"}
-      </h3>
 
-       <p className="mt-1 truncate text-sm text-gray-400">
-         {note.content || "Empty note"}
-       </p>
-    </button>
-  ))}
-</div>
-</aside>
+      <div className="flex-1 overflow-y-auto">
+
+        {notes.map((note) => (
+
+          <div key={note.id}>
+
+            <button
+              onClick={() => onSelectNote(note.id)}
+              className={`
+                w-full
+                px-5
+                py-4
+                text-left
+                transition
+                hover:bg-gray-100
+
+                ${
+                  selectedNoteId === note.id
+                    ? "bg-gray-100"
+                    : ""
+                }
+              `}
+            >
+
+              <h3 className="truncate font-medium">
+                {note.title || "Untitled Note"}
+              </h3>
+
+              <p className="mt-1 truncate text-sm text-gray-400">
+                {note.content || "Empty note"}
+              </p>
+
+            </button>
+
+
+            <button
+              onClick={() => onDeleteNote(note.id)}
+              className="
+                px-5
+                pb-3
+                text-xs
+                text-red-400
+                hover:text-red-600
+              "
+            >
+              Delete
+            </button>
+
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </aside>
   );
 }
